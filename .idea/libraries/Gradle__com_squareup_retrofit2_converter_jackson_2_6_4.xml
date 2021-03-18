@@ -1,0 +1,13 @@
+<component name="libraryTable">
+  <library name="Gradle: com.squareup.retrofit2:converter-jackson:2.6.4">
+    <CLASSES>
+      <root url="jar://$USER_HOME$/.gradle/caches/modules-2/files-2.1/com.squareup.retrofit2/converter-jackson/2.6.4/6151e94666fcc969ad16156f77587d66af824358/converter-jackson-2.6.4.jar!/" />
+    </CLASSES>
+    <JAVADOC>
+      <root url="jar://$USER_HOME$/.gradle/caches/modules-2/files-2.1/com.squareup.retrofit2/converter-jackson/2.6.4/83d9e6491e40e1b0c8dc8d19d8cf4789d5066b32/converter-jackson-2.6.4-javadoc.jar!/" />
+    </JAVADOC>
+    <SOURCES>
+      <root url="jar://$USER_HOME$/.gradle/caches/modules-2/files-2.1/com.squareup.retrofit2/converter-jackson/2.6.4/b723c296a65372eba6cea949bbb2c6e8599f8495/converter-jackson-2.6.4-sources.jar!/" />
+    </SOURCES>
+  </library>
+</component>

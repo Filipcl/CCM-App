@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="ProjectModuleManager">
+    <modules>
+      <module fileurl="file://$PROJECT_DIR$/.idea/modules/DHIS2-Coldchain.iml" filepath="$PROJECT_DIR$/.idea/modules/DHIS2-Coldchain.iml" />
+      <module fileurl="file://$PROJECT_DIR$/.idea/modules/app/DHIS2-Coldchain.app.iml" filepath="$PROJECT_DIR$/.idea/modules/app/DHIS2-Coldchain.app.iml" />
+      <module fileurl="file://$PROJECT_DIR$/.idea/modules/dhis2-android-sdk/core/DHIS2-Coldchain.core.iml" filepath="$PROJECT_DIR$/.idea/modules/dhis2-android-sdk/core/DHIS2-Coldchain.core.iml" />
+    </modules>
+  </component>
+</project>

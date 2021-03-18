@@ -1,0 +1,11 @@
+<component name="libraryTable">
+  <library name="Gradle: com.github.dhis2:sms-compression:0.2.0">
+    <CLASSES>
+      <root url="jar://$USER_HOME$/.gradle/caches/modules-2/files-2.1/com.github.dhis2/sms-compression/0.2.0/b0c203f167ef7332ee280702f83618d9f646f765/sms-compression-0.2.0.jar!/" />
+    </CLASSES>
+    <JAVADOC />
+    <SOURCES>
+      <root url="jar://$USER_HOME$/.gradle/caches/modules-2/files-2.1/com.github.dhis2/sms-compression/0.2.0/c014bef5afd5ed200730d95102839cde43dfa32e/sms-compression-0.2.0-sources.jar!/" />
+    </SOURCES>
+  </library>
+</component>

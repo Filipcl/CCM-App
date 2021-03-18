@@ -1,0 +1,13 @@
+<component name="libraryTable">
+  <library name="Gradle: org.cache2k:cache2k-core:1.2.4.Final">
+    <CLASSES>
+      <root url="jar://$USER_HOME$/.gradle/caches/modules-2/files-2.1/org.cache2k/cache2k-core/1.2.4.Final/c82a49f9e2e83e7dd3515c4f006cba27b68d6681/cache2k-core-1.2.4.Final.jar!/" />
+    </CLASSES>
+    <JAVADOC>
+      <root url="jar://$USER_HOME$/.gradle/caches/modules-2/files-2.1/org.cache2k/cache2k-core/1.2.4.Final/ac61eeb39ff82e8d113e30c0e6555c6c893c8125/cache2k-core-1.2.4.Final-javadoc.jar!/" />
+    </JAVADOC>
+    <SOURCES>
+      <root url="jar://$USER_HOME$/.gradle/caches/modules-2/files-2.1/org.cache2k/cache2k-core/1.2.4.Final/ab58a782439956d28d76e0aed4a1db24ef1e5316/cache2k-core-1.2.4.Final-sources.jar!/" />
+    </SOURCES>
+  </library>
+</component>

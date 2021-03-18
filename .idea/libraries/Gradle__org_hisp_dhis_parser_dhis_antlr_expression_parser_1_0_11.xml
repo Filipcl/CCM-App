@@ -1,0 +1,13 @@
+<component name="libraryTable">
+  <library name="Gradle: org.hisp.dhis.parser:dhis-antlr-expression-parser:1.0.11">
+    <CLASSES>
+      <root url="jar://$USER_HOME$/.gradle/caches/modules-2/files-2.1/org.hisp.dhis.parser/dhis-antlr-expression-parser/1.0.11/24513d9ed236c5bcc3f780035ef02c8056078ceb/dhis-antlr-expression-parser-1.0.11.jar!/" />
+    </CLASSES>
+    <JAVADOC>
+      <root url="jar://$USER_HOME$/.gradle/caches/modules-2/files-2.1/org.hisp.dhis.parser/dhis-antlr-expression-parser/1.0.11/12f737c09838238c687366640ab3a5680726b242/dhis-antlr-expression-parser-1.0.11-javadoc.jar!/" />
+    </JAVADOC>
+    <SOURCES>
+      <root url="jar://$USER_HOME$/.gradle/caches/modules-2/files-2.1/org.hisp.dhis.parser/dhis-antlr-expression-parser/1.0.11/fee32e98d0920de7635099a8e2af2b35b2864be5/dhis-antlr-expression-parser-1.0.11-sources.jar!/" />
+    </SOURCES>
+  </library>
+</component>
