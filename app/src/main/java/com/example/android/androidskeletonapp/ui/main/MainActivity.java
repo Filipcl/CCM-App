@@ -20,6 +20,7 @@ import com.example.android.androidskeletonapp.data.Sdk;
 import com.example.android.androidskeletonapp.data.service.ActivityStarter;
 import com.example.android.androidskeletonapp.data.service.SyncStatusHelper;
 import com.example.android.androidskeletonapp.ui.code_executor.CodeExecutorActivity;
+import com.example.android.androidskeletonapp.ui.cold_chain.ColdChain;
 import com.example.android.androidskeletonapp.ui.d2_errors.D2ErrorActivity;
 import com.example.android.androidskeletonapp.ui.data_sets.DataSetsActivity;
 import com.example.android.androidskeletonapp.ui.data_sets.instances.DataSetInstancesActivity;
@@ -301,6 +302,8 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
 
         if (id == R.id.navPrograms) {
             ActivityStarter.startActivity(this, ProgramsActivity.getProgramActivityIntent(this), false);
+        } else if (id == R.id.navColdChain) {
+            ActivityStarter.startActivity(this, ColdChain.getIntent(this), false);
         } else if (id == R.id.navTrackedEntities) {
             ActivityStarter.startActivity(this, TrackedEntityInstancesActivity.getTrackedEntityInstancesActivityIntent(this, null), false);
         } else if (id == R.id.navTrackedEntitiesSearch) {

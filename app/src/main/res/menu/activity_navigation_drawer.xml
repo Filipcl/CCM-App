@@ -9,6 +9,10 @@
             android:icon="@drawable/ic_programs_black_24dp"
             android:title="@string/title_activity_programs" />
         <item
+            android:id="@+id/navColdChain"
+            android:icon="@drawable/ic_cold_chain"
+            android:title="@string/title_activity_coldChain" />
+        <item
             android:id="@+id/navTrackedEntities"
             android:icon="@drawable/ic_group_black_24dp"
             android:title="@string/title_activity_tracked_entity_instances" />

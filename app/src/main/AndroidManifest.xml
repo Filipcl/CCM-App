@@ -40,6 +40,10 @@
             android:label="@string/title_activity_main"
             android:theme="@style/AppTheme.NoActionBar" />
         <activity
+            android:name=".ui.cold_chain.ColdChain"
+            android:label="@string/title_activity_coldChain"
+            android:theme="@style/AppTheme.NoActionBar" />
+        <activity
             android:name=".ui.programs.ProgramsActivity"
             android:label="@string/title_activity_programs"
             android:theme="@style/AppTheme.NoActionBar" />
