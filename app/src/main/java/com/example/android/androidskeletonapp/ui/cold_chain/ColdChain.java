@@ -4,8 +4,9 @@ import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.appcompat.widget.Toolbar;
+
 import com.example.android.androidskeletonapp.R;
-import com.example.android.androidskeletonapp.ui.programs.ProgramsActivity;
 
 public class ColdChain extends AppCompatActivity {
 
@@ -17,5 +18,22 @@ public class ColdChain extends AppCompatActivity {
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_cold_chain);
+        Toolbar toolbar = findViewById(R.id.coldChainToolbar);
+        setSupportActionBar(toolbar);
+        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+        getSupportActionBar().setDisplayShowHomeEnabled(true);
     }
+
+    @Override
+    public boolean onSupportNavigateUp() {
+        onBackPressed();
+        return true;
+    }
+    @Override
+    public void onBackPressed() {
+        super.onBackPressed();
+    }
+
 }
+
+
