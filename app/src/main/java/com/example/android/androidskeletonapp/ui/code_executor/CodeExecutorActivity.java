@@ -17,15 +17,20 @@ import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.google.android.material.snackbar.Snackbar;
 
 import org.hisp.dhis.android.core.D2;
-import org.hisp.dhis.android.core.arch.repositories.object.ReadOnlyOneObjectRepositoryFinalImpl;
 import org.hisp.dhis.android.core.enrollment.EnrollmentCreateProjection;
 import org.hisp.dhis.android.core.organisationunit.OrganisationUnit;
-import org.hisp.dhis.android.core.organisationunit.OrganisationUnitCollectionRepository;
 import org.hisp.dhis.android.core.program.Program;
 import org.hisp.dhis.android.core.program.ProgramTrackedEntityAttribute;
-import org.hisp.dhis.android.core.resource.internal.Resource;
 import org.hisp.dhis.android.core.trackedentity.TrackedEntityInstanceCreateProjection;
 
+import java.io.BufferedReader;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
+import java.io.Reader;
+import java.io.StringWriter;
+import java.io.UnsupportedEncodingException;
+import java.io.Writer;
 import java.util.List;
 
 import io.reactivex.Single;
@@ -47,6 +52,11 @@ public class CodeExecutorActivity extends AppCompatActivity {
 
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        try {
+            jsonParse();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
         setContentView(R.layout.activity_code_executor);
         Toolbar toolbar = findViewById(R.id.codeExecutorToolbar);
         setSupportActionBar(toolbar);
@@ -122,10 +132,33 @@ public class CodeExecutorActivity extends AppCompatActivity {
 
     )
 
+    private void jsonParse() throws IOException {
+        InputStream is = getResources().openRawResource(R.raw.temp);
+        Writer writer = new StringWriter();
+        char[] buffer = new char[1024];
+        try {
+            Reader reader = new BufferedReader(new InputStreamReader(is, "UTF-8"));
+            int n;
+            while ((n = reader.read(buffer)) != -1) {
+                writer.write(buffer, 0, n);
+            }
+        } catch (UnsupportedEncodingException e) {
+            e.printStackTrace();
+        } catch (IOException e) {
+            e.printStackTrace();
+        } finally {
+            is.close();
+        }
+
+        String jsonString = writer.toString();
+        System.out.println(jsonString);
+    }
+
     private Single<String> executeCode() {
         return Single.defer(() -> {
             String childProgramUid = "SDuMzcGLh8i";
             D2 d2 = Sdk.d2();
+            InputStream ins = getResources().openRawResource(R.raw.temp);
 
             OrganisationUnit organisationUnit = d2.organisationUnitModule().organisationUnits().one().blockingGet();
 
@@ -145,6 +178,10 @@ public class CodeExecutorActivity extends AppCompatActivity {
                            .trackedEntityInstance(teiUid)
                            .build()
            );
+
+           //TODO
+           System.out.println("****" + d2.enrollmentModule().enrollments().byUid().toString());
+
 
            List<ProgramTrackedEntityAttribute> ProgramValues = d2.programModule().programTrackedEntityAttributes()
                    .byProgram().eq(childProgramUid)
