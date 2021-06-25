@@ -23,6 +23,7 @@ import org.hisp.dhis.android.core.organisationunit.OrganisationUnit;
 import org.hisp.dhis.android.core.organisationunit.OrganisationUnitCollectionRepository;
 import org.hisp.dhis.android.core.program.Program;
 import org.hisp.dhis.android.core.program.ProgramTrackedEntityAttribute;
+import org.hisp.dhis.android.core.resource.internal.Resource;
 import org.hisp.dhis.android.core.trackedentity.TrackedEntityInstanceCreateProjection;
 
 import java.util.List;
@@ -123,14 +124,12 @@ public class CodeExecutorActivity extends AppCompatActivity {
 
     private Single<String> executeCode() {
         return Single.defer(() -> {
-            String childProgramUid = "IpHINAT79UW";
+            String childProgramUid = "SDuMzcGLh8i";
             D2 d2 = Sdk.d2();
 
             OrganisationUnit organisationUnit = d2.organisationUnitModule().organisationUnits().one().blockingGet();
 
             Program program = d2.programModule().programs().uid(childProgramUid).blockingGet();
-
-            // TODO
 
             String teiUid = d2.trackedEntityModule().trackedEntityInstances().blockingAdd(
                     TrackedEntityInstanceCreateProjection.builder()
