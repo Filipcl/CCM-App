@@ -18,16 +18,21 @@ import com.example.android.androidskeletonapp.ui.base.DiffByIdItemCallback;
 import com.example.android.androidskeletonapp.ui.base.ListItemWithSyncHolder;
 import com.example.android.androidskeletonapp.ui.tracker_import_conflicts.TrackerImportConflictsAdapter;
 
+import org.hisp.dhis.android.core.D2;
 import org.hisp.dhis.android.core.arch.call.D2Progress;
+import org.hisp.dhis.android.core.arch.fields.internal.FieldsHelper;
 import org.hisp.dhis.android.core.common.State;
+import org.hisp.dhis.android.core.event.Event;
 import org.hisp.dhis.android.core.maintenance.D2Error;
 import org.hisp.dhis.android.core.trackedentity.TrackedEntityAttributeValue;
 import org.hisp.dhis.android.core.trackedentity.TrackedEntityInstance;
 
 import java.text.MessageFormat;
+import java.util.Collections;
 import java.util.List;
 
 import io.reactivex.Observable;
+import io.reactivex.Single;
 import io.reactivex.android.schedulers.AndroidSchedulers;
 import io.reactivex.disposables.Disposable;
 import io.reactivex.schedulers.Schedulers;
@@ -120,7 +125,6 @@ public class TrackedEntityInstanceAdapter extends PagedListAdapter<TrackedEntity
                 return attributeValue.value();
             }
         }
-
         return null;
     }
 

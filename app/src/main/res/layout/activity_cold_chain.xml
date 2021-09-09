@@ -20,6 +20,23 @@
 
     </com.google.android.material.appbar.AppBarLayout>
 
-    <include layout="@layout/content_cold_chain" />
+
+    <LinearLayout
+        android:id="@+id/linearLayout"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:orientation="vertical"
+        >
+
+    </LinearLayout>
+
+    <include
+        layout="@layout/content_cold_chain"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center"
+        app:layout_anchor="@+id/linearLayout"
+        app:layout_anchorGravity="center" />
+
 
 </androidx.coordinatorlayout.widget.CoordinatorLayout>
