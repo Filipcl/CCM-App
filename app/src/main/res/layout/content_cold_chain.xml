@@ -4,62 +4,173 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:id="@+id/bleCard"
     app:layout_behavior="@string/appbar_scrolling_view_behavior"
-    tools:context=".ui.cold_chain.ColdChain"
-    tools:showIn="@layout/activity_cold_chain">
+    tools:context=".ui.cold_chain.ColdChain">
 
-
-
-    <LinearLayout
-        android:layout_width="wrap_content"
+    <androidx.cardview.widget.CardView xmlns:android="http://schemas.android.com/apk/res/android"
+        xmlns:tools="http://schemas.android.com/tools"
+        android:id="@+id/bleInfoCard"
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:orientation="vertical"
-        android:layout_gravity="center"
-        >
+        android:layout_marginStart="16dp"
+        android:layout_marginTop="16dp"
+        android:layout_marginEnd="16dp"
+        android:foreground="?attr/selectableItemBackgroundBorderless"
+        android:clickable="true"
+        android:focusable="true">
 
-        <TextView
-            android:id="@+id/Heading"
-            android:layout_width="wrap_content"
+        <LinearLayout xmlns:app="http://schemas.android.com/apk/res-auto"
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:text="Temperature Data"
-            android:textAppearance="@style/TextAppearance.AppCompat.Display1" />
+            android:orientation="vertical">
 
-        <TextView
-            android:id="@+id/teiInfo"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="Hello, I am teiData"
-            android:textAppearance="@style/TextAppearance.AppCompat.Body1" />
+            <LinearLayout
+                android:orientation="horizontal"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content">
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="CC:98:A3:81"
+                    android:textAppearance="@style/TextAppearance.AppCompat.Medium"
+                    android:textSize="20sp"
+                    android:paddingTop="16dp"
+                    android:paddingLeft="8dp"
+                    />
+                <LinearLayout
+                    android:orientation="horizontal"
+                    android:layout_width="match_parent"
+                    android:gravity="end"
+                    android:paddingTop="16dp"
+                    android:layout_marginBottom="16dp"
+                    android:paddingRight="8dp"
+                    android:layout_height="wrap_content">
+                    <ImageView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        app:srcCompat="@drawable/ic_baseline_battery_full_24"
+                        />
+                    <TextView
+                        android:id="@+id/battery_lvl"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_gravity="end"
+                        android:text="100%"
+                        />
+                </LinearLayout>
+            </LinearLayout>
+            <TableLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical">
 
-        <TextView
-            android:id="@+id/temperatureData"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="Hello, I am tempData"
-            android:textAppearance="@style/TextAppearance.AppCompat.Medium" />
+                <TableRow android:padding="4dp">
+                    <TextView
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:text="Current temp: "
+                        android:textAppearance="@style/TextAppearance.AppCompat.Large"
+                        android:textSize="14sp"
+                        android:padding="8dp"
+                        />
+                    <TextView
+                        android:id="@+id/current_temp"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:textSize="18sp"
+                        android:textColor="@color/colorWarn"
+                        android:text="12°"
+                        android:padding="8dp"
+                        />
 
-        <TextView
-            android:id="@+id/created"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="Hello, I am createdData" />
+                </TableRow>
+                <View
+                    android:layout_width="match_parent"
+                    android:layout_height="1dp"
+                    android:background="@color/colorAccentDark"/>
 
-        <Button
-            android:id="@+id/addBtn"
-            android:onClick="addJsonToView"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_gravity="center"
-            android:layout_margin="15dp"
-            android:text="Legg til data" />
-        <TextView
-            android:id="@+id/tempJson"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="jsonData" />
+                <TableRow android:padding="4dp">
+                    <TextView
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:text="Min temp: "
+                        android:textAppearance="@style/TextAppearance.AppCompat.Large"
+                        android:textSize="14sp"
+                        android:padding="8dp"
+                        />
+                    <TextView
+                        android:id="@+id/min_temp"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:text="-10°"
+                        android:textColor="@color/colorPrimaryDark"
+                        android:textSize="18sp"
+                        android:padding="8dp"
+                        />
+                </TableRow>
+                <View
+                    android:layout_width="match_parent"
+                    android:layout_height="1dp"
+                    android:background="@color/colorAccentDark"/>
+                <TableRow android:padding="4dp">
+                    <TextView
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:text="Max temp: "
+                        android:textAppearance="@style/TextAppearance.AppCompat.Large"
+                        android:textSize="14sp"
+                        android:padding="8dp"
+                        />
+                    <TextView
+                        android:id="@+id/max_temp"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:text="120°"
+                        android:textSize="18sp"
+                        android:textColor="@color/colorWarn"
+                        android:padding="8dp"
+                        />
+                </TableRow>
+                <View
+                    android:layout_width="match_parent"
+                    android:layout_height="1dp"
+                    android:background="@color/colorAccentDark"/>
+                <TableRow android:padding="4dp">
+                    <TextView
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:text="Avg temp: "
+                        android:textAppearance="@style/TextAppearance.AppCompat.Large"
+                        android:textSize="14sp"
+                        android:padding="8dp"
+                        />
+                    <TextView
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:text="23.3°"
+                        android:textSize="18sp"
+                        android:textColor="@color/colorWarn"
+                        android:padding="8dp"
+                        />
+                </TableRow>
+                <View
+                    android:layout_width="match_parent"
+                    android:layout_height="1dp"
+                    android:background="@color/colorAccentDark"/>
+            </TableLayout>
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="32dp">
 
+                <com.jjoe64.graphview.GraphView
+                    android:id="@+id/idGraphView"
+                    android:layout_width="match_parent"
+                    android:layout_height="150dp" />
 
-
-    </LinearLayout>
+            </LinearLayout>
+        </LinearLayout>
+    </androidx.cardview.widget.CardView>
 </androidx.coordinatorlayout.widget.CoordinatorLayout>
 

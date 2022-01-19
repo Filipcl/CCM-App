@@ -10,11 +10,12 @@
     </facet>
     <facet type="java-gradle" name="Java-Gradle">
       <configuration>
+        <option name="BUILD_FOLDER_PATH" value="$MODULE_DIR$/../../../../dhis2-android-sdk/core/build" />
         <option name="BUILDABLE" value="false" />
       </configuration>
     </facet>
   </component>
-  <component name="NewModuleRootManager">
+  <component name="NewModuleRootManager" inherit-compiler-output="true">
     <exclude-output />
     <content url="file://$MODULE_DIR$/../../../../dhis2-android-sdk/core">
       <excludeFolder url="file://$MODULE_DIR$/../../../../dhis2-android-sdk/core/.gradle" />

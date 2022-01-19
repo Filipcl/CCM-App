@@ -1,0 +1,266 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:orientation="vertical">
+
+    <com.google.android.material.appbar.AppBarLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:theme="@style/AppTheme.AppBarOverlay">
+
+        <androidx.appcompat.widget.Toolbar
+            android:id="@+id/DeviceControlToolbar"
+            android:layout_width="match_parent"
+            android:layout_height="?attr/actionBarSize"
+            android:background="?attr/colorPrimary"
+            app:popupTheme="@style/AppTheme.PopupOverlay" />
+
+    </com.google.android.material.appbar.AppBarLayout>
+
+    <androidx.cardview.widget.CardView xmlns:android="http://schemas.android.com/apk/res/android"
+        xmlns:tools="http://schemas.android.com/tools"
+        android:id="@+id/bleInfoCard"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="16dp"
+        android:layout_marginTop="16dp"
+        android:layout_marginEnd="16dp"
+        android:foreground="?attr/selectableItemBackgroundBorderless"
+        android:clickable="true"
+        android:focusable="true">
+
+        <LinearLayout xmlns:app="http://schemas.android.com/apk/res-auto"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical">
+
+            <LinearLayout
+                android:orientation="horizontal"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content">
+                <TextView
+                    android:id="@+id/device_name"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="CC:98:A3:81"
+                    android:textAppearance="@style/TextAppearance.AppCompat.Medium"
+                    android:textSize="20sp"
+                    android:paddingTop="16dp"
+                    android:paddingLeft="8dp"/>
+
+                <LinearLayout
+                    android:orientation="horizontal"
+                    android:layout_width="match_parent"
+                    android:gravity="end"
+                    android:paddingTop="16dp"
+                    android:layout_marginBottom="16dp"
+                    android:paddingRight="8dp"
+                    android:layout_height="wrap_content">
+                    <TextView
+                        android:id="@+id/connection_state"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="@string/disconnected"
+                        android:paddingRight="32dp"
+                        />
+                    <ImageView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        app:srcCompat="@drawable/ic_baseline_battery_full_24"
+                        />
+                    <TextView
+                        android:id="@+id/battery_lvl"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_gravity="end"
+                        android:text="100%"
+                        />
+                </LinearLayout>
+            </LinearLayout>
+            <TableLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical">
+
+                <TableRow android:padding="4dp">
+                    <TextView
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:text="Current temp: "
+                        android:textAppearance="@style/TextAppearance.AppCompat.Large"
+                        android:textSize="14sp"
+                        android:padding="8dp"
+                        />
+                    <TextView
+                        android:id="@+id/current_temp"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:textSize="18sp"
+                        android:text="--"
+                        android:layout_gravity="center"
+                        android:padding="8dp"
+                        />
+
+                </TableRow>
+                <View
+                    android:layout_width="match_parent"
+                    android:layout_height="1dp"
+                    android:background="@color/colorAccentDark"/>
+
+                <TableRow android:padding="4dp">
+                    <TextView
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:text="Min temp: "
+                        android:textAppearance="@style/TextAppearance.AppCompat.Large"
+                        android:textSize="14sp"
+                        android:padding="8dp"
+                        />
+                    <TextView
+                        android:id="@+id/min_temp"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:text="--"
+                        android:layout_gravity="center"
+                        android:textSize="18sp"
+                        android:padding="8dp"
+                        />
+                </TableRow>
+                <View
+                    android:layout_width="match_parent"
+                    android:layout_height="1dp"
+                    android:background="@color/colorAccentDark"/>
+                <TableRow android:padding="4dp">
+                    <TextView
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:text="Max temp: "
+                        android:textAppearance="@style/TextAppearance.AppCompat.Large"
+                        android:textSize="14sp"
+                        android:padding="8dp"
+                        />
+                    <TextView
+                        android:id="@+id/max_temp"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:text="--"
+                        android:layout_gravity="center"
+                        android:textSize="18sp"
+                        android:padding="8dp"
+                        />
+                </TableRow>
+                <View
+                    android:layout_width="match_parent"
+                    android:layout_height="1dp"
+                    android:background="@color/colorAccentDark"/>
+                <TableRow android:padding="4dp">
+                    <TextView
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:text="Avg temp: "
+                        android:textAppearance="@style/TextAppearance.AppCompat.Large"
+                        android:textSize="14sp"
+                        android:padding="8dp"
+                        />
+                    <TextView
+                        android:id="@+id/avg_temp"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:text="--"
+                        android:layout_gravity="center"
+                        android:textSize="18sp"
+                        android:padding="8dp"
+                        />
+                </TableRow>
+                <View
+                    android:layout_width="match_parent"
+                    android:layout_height="1dp"
+                    android:background="@color/colorAccentDark"/>
+            </TableLayout>
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="32dp">
+
+                <com.jjoe64.graphview.GraphView
+                    android:id="@+id/idGraphView"
+                    android:layout_width="match_parent"
+                    android:layout_height="150dp" />
+
+            </LinearLayout>
+        </LinearLayout>
+    </androidx.cardview.widget.CardView>
+    <View
+        android:layout_width="match_parent"
+        android:layout_height="8dp"
+        />
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:gravity="center"
+        android:layout_height="wrap_content">
+
+        <Button
+            android:id="@+id/settings_btn"
+            android:layout_width="150dp"
+            android:layout_height="wrap_content"
+            android:text="Device Settings"
+            android:theme="@style/Widget.AppCompat.Button" />
+        <Space
+            android:layout_width="32dp"
+            android:layout_height="wrap_content"
+             />
+
+        <Button
+            android:id="@+id/upload_btn"
+            android:layout_width="150dp"
+            android:layout_height="wrap_content"
+            android:text="Upolad"
+            android:theme="@style/Widget.AppCompat.Button" />
+
+    </LinearLayout>
+
+    <View
+        android:layout_width="match_parent"
+        android:layout_height="1dp"
+        android:layout_margin="8dp"
+        android:background="@android:color/darker_gray" />
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:gravity="center"
+        android:orientation="horizontal">
+
+        <Button
+            android:id="@+id/download_btn"
+            android:layout_width="120dp"
+            android:layout_height="wrap_content"
+            android:text="Export DB"
+            android:theme="@style/Widget.AppCompat.Button" />
+
+        <Button
+            android:id="@+id/delete_btn"
+            android:layout_width="120dp"
+            android:layout_height="wrap_content"
+            android:text="Clear DB"
+            android:theme="@style/Widget.AppCompat.Button" />
+
+        <Button
+            android:id="@+id/display_btn"
+            android:layout_width="120dp"
+            android:layout_height="wrap_content"
+            android:text="Display DB"
+            android:theme="@style/Widget.AppCompat.Button" />
+
+    </LinearLayout>
+
+
+    <View
+        android:layout_width="match_parent"
+        android:layout_height="1dp"
+        android:layout_margin="8dp"
+        android:background="@android:color/darker_gray" />
+
+</LinearLayout>

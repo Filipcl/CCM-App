@@ -1,19 +1,35 @@
 package com.example.android.androidskeletonapp.ui.main;
 
+import android.Manifest;
+import android.app.Activity;
+import android.bluetooth.BluetoothAdapter;
+import android.bluetooth.BluetoothDevice;
+import android.bluetooth.BluetoothManager;
 import android.content.Context;
 import android.content.Intent;
+import android.content.pm.PackageManager;
 import android.database.Cursor;
+import android.net.ConnectivityManager;
+import android.net.NetworkInfo;
 import android.os.Bundle;
+import android.os.Handler;
+import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.ProgressBar;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import androidx.appcompat.app.ActionBarDrawerToggle;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
+import androidx.core.app.ActivityCompat;
+import androidx.core.content.ContextCompat;
 import androidx.core.view.GravityCompat;
 import androidx.drawerlayout.widget.DrawerLayout;
+import androidx.recyclerview.widget.DefaultItemAnimator;
+import androidx.recyclerview.widget.LinearLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.android.androidskeletonapp.R;
 import com.example.android.androidskeletonapp.data.Sdk;
@@ -35,7 +51,7 @@ import com.google.android.material.snackbar.Snackbar;
 import org.hisp.dhis.android.core.arch.call.D2Progress;
 import org.hisp.dhis.android.core.user.User;
 
-import java.text.MessageFormat;
+import java.util.ArrayList;
 
 import io.reactivex.Observable;
 import io.reactivex.android.schedulers.AndroidSchedulers;
@@ -57,6 +73,21 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
 
     private boolean isSyncing = false;
 
+    RecyclerView recyclerView;
+    private MyRecyclerViewAdapter.RecyclerViewClickListener listener;
+
+    //BLE variables
+    private BluetoothAdapter mBluetoothAdapter;
+    private ArrayList<BluetoothDevice> mLeDevices;
+    private boolean mScanning;
+    private Handler mHandler;
+
+    private static final int REQUEST_ENABLE_BT = 1;
+    private static final int ACCESS_FINE_LOCATION_PERMISSION = 85;
+    // Stops scanning after 6 seconds.
+    private static final long SCAN_PERIOD = 6000;
+
+
     public static Intent getMainActivityIntent(Context context) {
         return new Intent(context, MainActivity.class);
     }
@@ -65,6 +96,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_navigation);
+        mHandler = new Handler();
 
         compositeDisposable = new CompositeDisposable();
 
@@ -72,14 +104,138 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         TextView greeting = findViewById(R.id.greeting);
         greeting.setText(String.format("Hi %s!", user.displayName()));
 
+
+        // Use this check to determine whether BLE is supported on the device.  Then you can
+        // selectively disable BLE-related features.
+        if (!getPackageManager().hasSystemFeature(PackageManager.FEATURE_BLUETOOTH_LE)) {
+            Toast.makeText(this, "BLE not supported", Toast.LENGTH_SHORT).show();
+            finish();
+        }
+
+        if (ContextCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
+            ActivityCompat.requestPermissions(this, new String[]{Manifest.permission.ACCESS_FINE_LOCATION}, ACCESS_FINE_LOCATION_PERMISSION);
+        }
+        if(!haveNetworkConnection()){
+            disableAllButtons();
+        }
+
+        // Initializes a Bluetooth adapter.  For API level 18 and above, get a reference to
+        // BluetoothAdapter through BluetoothManager.
+        final BluetoothManager bluetoothManager =
+                (BluetoothManager) getSystemService(Context.BLUETOOTH_SERVICE);
+        mBluetoothAdapter = bluetoothManager.getAdapter();
+
+        // Checks if Bluetooth is supported on the device.
+        if (mBluetoothAdapter == null) {
+            Toast.makeText(this, "BLE not supported", Toast.LENGTH_SHORT).show();
+            finish();
+            return;
+        }
+
+        mLeDevices = new ArrayList<>();
+
+        // set up the RecyclerView
+        recyclerView = findViewById(R.id.rvDevices);
+
+        inflateMainListView();
         inflateMainView();
+
         createNavigationView(user);
     }
 
     @Override
     protected void onResume() {
         super.onResume();
+        // Ensures Bluetooth is enabled on the device.  If Bluetooth is not currently enabled,
+        // fire an intent to display a dialog asking the user to grant permission to enable it.
+        if (!mBluetoothAdapter.isEnabled()) {
+            Intent enableBtIntent = new Intent(BluetoothAdapter.ACTION_REQUEST_ENABLE);
+            startActivityForResult(enableBtIntent, REQUEST_ENABLE_BT);
+        }
+
+        // Initializes list view adapter.
+        scanLeDevice(true);
         updateSyncDataAndButtons();
+    }
+
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        // User chose not to enable Bluetooth.
+        if (requestCode == REQUEST_ENABLE_BT && resultCode == Activity.RESULT_CANCELED) {
+            finish();
+            return;
+        }
+        super.onActivityResult(requestCode, resultCode, data);
+    }
+
+    @Override
+    protected void onPause() {
+        super.onPause();
+        scanLeDevice(false);
+    }
+
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        getMenuInflater().inflate(R.menu.main, menu);
+        if (!mScanning) {
+            menu.findItem(R.id.menu_stop).setVisible(false);
+            menu.findItem(R.id.menu_scan).setVisible(true);
+            menu.findItem(R.id.menu_refresh).setActionView(null);
+        } else {
+            menu.findItem(R.id.menu_stop).setVisible(true);
+            menu.findItem(R.id.menu_scan).setVisible(false);
+            menu.findItem(R.id.menu_refresh).setActionView(
+                    R.layout.actionbar_indeterminate_progress);
+        }
+        return true;
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        switch (item.getItemId()) {
+            case R.id.menu_scan:
+                mLeDevices.clear();
+                scanLeDevice(true);
+                break;
+            case R.id.menu_stop:
+                scanLeDevice(false);
+                break;
+        }
+        return true;
+    }
+
+    private void setAdapter(){
+        setOnClickListener();
+        MyRecyclerViewAdapter adapter = new MyRecyclerViewAdapter(mLeDevices, listener);
+        RecyclerView.LayoutManager layoutManager = new LinearLayoutManager(getApplicationContext());
+        recyclerView.setLayoutManager(layoutManager);
+        recyclerView.setItemAnimator(new DefaultItemAnimator());
+        recyclerView.setAdapter(adapter);
+    }
+
+    private void setOnClickListener(){
+        listener = new MyRecyclerViewAdapter.RecyclerViewClickListener() {
+
+            @Override
+            public void onClick(View v, int position) {
+                final BluetoothDevice device = mLeDevices.get(position);
+                // Stop scan onclick
+
+                mScanning = false;
+                mBluetoothAdapter.stopLeScan(mLeScanCallback);
+                if (device == null) return;
+
+                final Intent intent = new Intent(getApplicationContext(), DeviceControlActivity.class);
+                intent.putExtra(DeviceControlActivity.EXTRAS_DEVICE_NAME, device.getName());
+                intent.putExtra(DeviceControlActivity.EXTRAS_DEVICE_ADDRESS, device.getAddress());
+                if (mScanning) {
+                    mBluetoothAdapter.stopLeScan(mLeScanCallback);
+                    mScanning = false;
+                }
+                startActivity(intent);
+
+            }
+        };
     }
 
     private User getUser() {
@@ -115,9 +271,43 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         }
     }
 
+    private void inflateMainListView(){
+       syncMetadataButton = findViewById(R.id.syncMetadataButton);
+       syncDataButton = findViewById(R.id.syncDataButton);
+        uploadDataButton = findViewById(R.id.uploadDataButton);
+
+        progressBar = findViewById(R.id.syncProgressBar);
+
+        syncMetadataButton.setOnClickListener(view -> {
+            setSyncing();
+            Snackbar.make(view, "Syncing metadata", Snackbar.LENGTH_LONG)
+                    .setAction("Action", null).show();
+            syncStatusText.setText(R.string.syncing_metadata);
+            syncMetadata();
+        });
+
+        syncDataButton.setOnClickListener(view -> {
+            setSyncing();
+            Snackbar.make(view, "Syncing data", Snackbar.LENGTH_LONG)
+                    .setAction("Action", null).show();
+            syncStatusText.setText(R.string.syncing_data);
+            downloadData();
+        });
+
+        uploadDataButton.setOnClickListener(view -> {
+            setSyncing();
+            Snackbar.make(view, "Uploading data", Snackbar.LENGTH_LONG)
+                    .setAction("Action", null).show();
+            syncStatusText.setText(R.string.uploading_data);
+            uploadData();
+        });
+
+    }
+
+
     private void inflateMainView() {
-        syncMetadataButton = findViewById(R.id.syncMetadataButton);
-        syncDataButton = findViewById(R.id.syncDataButton);
+       syncMetadataButton = findViewById(R.id.syncMetadataButton);
+       syncDataButton = findViewById(R.id.syncDataButton);
         uploadDataButton = findViewById(R.id.uploadDataButton);
 
         syncStatusText = findViewById(R.id.notificator);
@@ -147,6 +337,23 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
             uploadData();
         });
     }
+    private boolean haveNetworkConnection() {
+        boolean haveConnectedWifi = false;
+        boolean haveConnectedMobile = false;
+
+        ConnectivityManager cm = (ConnectivityManager) getSystemService(Context.CONNECTIVITY_SERVICE);
+        NetworkInfo[] netInfo = cm.getAllNetworkInfo();
+        for (NetworkInfo ni : netInfo) {
+            if (ni.getTypeName().equalsIgnoreCase("WIFI"))
+                if (ni.isConnected())
+                    haveConnectedWifi = true;
+            if (ni.getTypeName().equalsIgnoreCase("MOBILE"))
+                if (ni.isConnected())
+                    haveConnectedMobile = true;
+        }
+        return haveConnectedWifi || haveConnectedMobile;
+    }
+
 
     private void setSyncing() {
         isSyncing = true;
@@ -172,7 +379,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         if (!isSyncing) {
             setEnabledButton(syncMetadataButton, true);
             if (metadataSynced) {
-                setEnabledButton(syncDataButton, true);
+                 setEnabledButton(syncDataButton, true);
                 if (SyncStatusHelper.isThereDataToUpload()) {
                     setEnabledButton(uploadDataButton, true);
                 }
@@ -190,22 +397,9 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
 
         int programCount = SyncStatusHelper.programCount();
         int dataSetCount = SyncStatusHelper.dataSetCount();
-        int trackedEntityInstanceCount = SyncStatusHelper.trackedEntityInstanceCount();
-        int singleEventCount = SyncStatusHelper.singleEventCount();
-        int dataValueCount = SyncStatusHelper.dataValueCount();
 
         enablePossibleButtons(programCount + dataSetCount > 0);
 
-        TextView downloadedProgramsText = findViewById(R.id.programsDownloadedText);
-        TextView downloadedDataSetsText = findViewById(R.id.dataSetsDownloadedText);
-        TextView downloadedTeisText = findViewById(R.id.trackedEntityInstancesDownloadedText);
-        TextView singleEventsDownloadedText = findViewById(R.id.singleEventsDownloadedText);
-        TextView downloadedDataValuesText = findViewById(R.id.dataValuesDownloadedText);
-        downloadedProgramsText.setText(MessageFormat.format("{0}", programCount));
-        downloadedDataSetsText.setText(MessageFormat.format("{0}", dataSetCount));
-        downloadedTeisText.setText(MessageFormat.format("{0}", trackedEntityInstanceCount));
-        singleEventsDownloadedText.setText(MessageFormat.format("{0}", singleEventCount));
-        downloadedDataValuesText.setText(MessageFormat.format("{0}", dataValueCount));
     }
 
     private void createNavigationView(User user) {
@@ -233,7 +427,6 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
                 .doOnError(Throwable::printStackTrace)
                 .doOnComplete(() -> {
                     setSyncingFinished();
-                    ActivityStarter.startActivity(this, ProgramsActivity.getProgramActivityIntent(this), false);
                 })
                 .subscribe());
     }
@@ -253,7 +446,6 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
                         .observeOn(AndroidSchedulers.mainThread())
                         .doOnComplete(() -> {
                             setSyncingFinished();
-                            ActivityStarter.startActivity(this, TrackedEntityInstancesActivity.getTrackedEntityInstancesActivityIntent(this, null), false);
                         })
                         .doOnError(Throwable::printStackTrace)
                         .subscribe());
@@ -300,33 +492,62 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
     public boolean onNavigationItemSelected(MenuItem item) {
         int id = item.getItemId();
 
-        if (id == R.id.navPrograms) {
-            ActivityStarter.startActivity(this, ProgramsActivity.getProgramActivityIntent(this), false);
-        } else if (id == R.id.navColdChain) {
+        if (id == R.id.navColdChain) {
             ActivityStarter.startActivity(this, ColdChain.getIntent(this), false);
-        } else if (id == R.id.navTrackedEntities) {
-            ActivityStarter.startActivity(this, TrackedEntityInstancesActivity.getTrackedEntityInstancesActivityIntent(this, null), false);
-        } else if (id == R.id.navTrackedEntitiesSearch) {
-            ActivityStarter.startActivity(this, TrackedEntityInstanceSearchActivity.getIntent(this), false);
-        } else if (id == R.id.navDataSets) {
-            ActivityStarter.startActivity(this, DataSetsActivity.getIntent(this), false);
-        } else if (id == R.id.navDataSetInstances) {
-            ActivityStarter.startActivity(this, DataSetInstancesActivity.getIntent(this), false);
-        } else if (id == R.id.navD2Errors) {
-            ActivityStarter.startActivity(this, D2ErrorActivity.getIntent(this), false);
-        } else if (id == R.id.navFKViolations) {
-            ActivityStarter.startActivity(this, ForeignKeyViolationsActivity.getIntent(this), false);
-        } else if (id == R.id.navCodeExecutor) {
-            ActivityStarter.startActivity(this, CodeExecutorActivity.getIntent(this), false);
         } else if (id == R.id.navWipeData) {
             syncStatusText.setText(R.string.wiping_data);
             wipeData();
         } else if (id == R.id.navExit) {
             compositeDisposable.add(logOut(this));
         }
-
         DrawerLayout drawer = findViewById(R.id.drawerLayout);
         drawer.closeDrawer(GravityCompat.START);
         return true;
     }
+
+
+    private void scanLeDevice(final boolean enable) {
+        if (enable) {
+            // Stops scanning after a pre-defined scan period.
+            mHandler.postDelayed(new Runnable() {
+                @Override
+                public void run() {
+                    mScanning = false;
+                    mBluetoothAdapter.stopLeScan(mLeScanCallback);
+                    invalidateOptionsMenu();
+                }
+            }, SCAN_PERIOD);
+
+            mScanning = true;
+            mBluetoothAdapter.startLeScan(mLeScanCallback);
+        } else {
+            mScanning = false;
+            mBluetoothAdapter.stopLeScan(mLeScanCallback);
+        }
+        invalidateOptionsMenu();
+    }
+
+
+    // Device scan callback.
+    private BluetoothAdapter.LeScanCallback mLeScanCallback =
+            new BluetoothAdapter.LeScanCallback() {
+
+                @Override
+                public void onLeScan(final BluetoothDevice device, int rssi, byte[] scanRecord) {
+                    runOnUiThread(new Runnable() {
+                        @Override
+                        public void run() {
+                            if (!mLeDevices.contains(device)) {
+                                // Filters out other devices than the purple sensor i got
+                                // TO-DO make it generic for BM devices
+                                if (device.getAddress().startsWith("CC:98:A3") || device.getAddress().startsWith("C2:1C:80") ) {
+                                    mLeDevices.add(device);
+                                }
+                            }
+                        }
+                    });
+                    setAdapter();
+                }
+            };
+
 }

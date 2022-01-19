@@ -1,5 +1,5 @@
 <resources>
-    <string name="app_name">Dhis2 Skeleton App</string>
+    <string name="app_name">Dhis2 Cold Chain Monitoring</string>
     <!-- Strings related to login -->
     <string name="title_activity_login">Log in</string>
     <string name="prompt_server_url">Server url</string>
@@ -95,4 +95,9 @@
     <string name="yes">Yes</string>
     <string name="no">No</string>
     <string name="filter_background">filterBackground</string>
+    <string name="label_state">state</string>
+    <string name="no_data">-</string>
+    <string name="connected">Connected</string>
+    <string name="disconnected">Disconnected</string>
+
 </resources>

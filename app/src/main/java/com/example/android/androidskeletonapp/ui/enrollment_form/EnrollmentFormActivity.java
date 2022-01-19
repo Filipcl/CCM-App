@@ -12,19 +12,15 @@ import android.view.View;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
-import androidx.appcompat.widget.Toolbar;
 import androidx.core.app.ActivityCompat;
 import androidx.core.content.ContextCompat;
 import androidx.core.content.FileProvider;
-import androidx.databinding.DataBindingUtil;
 
 import com.example.android.androidskeletonapp.BuildConfig;
-import com.example.android.androidskeletonapp.R;
 import com.example.android.androidskeletonapp.data.Sdk;
 import com.example.android.androidskeletonapp.data.service.forms.EnrollmentFormService;
 import com.example.android.androidskeletonapp.data.service.forms.FormField;
 import com.example.android.androidskeletonapp.data.service.forms.RuleEngineService;
-import com.example.android.androidskeletonapp.databinding.ActivityEnrollmentFormBinding;
 
 import org.hisp.dhis.android.core.arch.helpers.FileResizerHelper;
 import org.hisp.dhis.android.core.arch.helpers.FileResourceDirectoryHelper;
@@ -53,7 +49,6 @@ public class EnrollmentFormActivity extends AppCompatActivity {
     private final int CAMERA_RQ = 0;
     private final int CAMERA_PERMISSION = 0;
 
-    private ActivityEnrollmentFormBinding binding;
     private FormAdapter adapter;
     private CompositeDisposable disposable;
     private PublishProcessor<Boolean> engineInitialization;
@@ -79,18 +74,12 @@ public class EnrollmentFormActivity extends AppCompatActivity {
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        binding = DataBindingUtil.setContentView(this, R.layout.activity_enrollment_form);
-
-        Toolbar toolbar = binding.toolbar;
-        setSupportActionBar(toolbar);
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
         getSupportActionBar().setDisplayShowHomeEnabled(true);
 
         teiUid = getIntent().getStringExtra(IntentExtra.TEI_UID.name());
 
         adapter = new FormAdapter(getValueListener(), getImageListener());
-        binding.buttonEnd.setOnClickListener(this::finishEnrollment);
-        binding.formRecycler.setAdapter(adapter);
 
         engineInitialization = PublishProcessor.create();
 
