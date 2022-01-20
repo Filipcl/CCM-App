@@ -1,6 +1,7 @@
 package com.example.android.androidskeletonapp.ui.main;
 
 import android.Manifest;
+import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.bluetooth.BluetoothAdapter;
 import android.bluetooth.BluetoothDevice;
@@ -11,11 +12,15 @@ import android.content.pm.PackageManager;
 import android.database.Cursor;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
+import android.net.wifi.WifiManager;
 import android.os.Bundle;
 import android.os.Handler;
+import android.provider.Settings;
+import android.text.Layout;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
+import android.widget.Button;
 import android.widget.ProgressBar;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -23,6 +28,7 @@ import android.widget.Toast;
 import androidx.appcompat.app.ActionBarDrawerToggle;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
+import androidx.constraintlayout.widget.ConstraintLayout;
 import androidx.core.app.ActivityCompat;
 import androidx.core.content.ContextCompat;
 import androidx.core.view.GravityCompat;
@@ -41,6 +47,7 @@ import com.example.android.androidskeletonapp.ui.d2_errors.D2ErrorActivity;
 import com.example.android.androidskeletonapp.ui.data_sets.DataSetsActivity;
 import com.example.android.androidskeletonapp.ui.data_sets.instances.DataSetInstancesActivity;
 import com.example.android.androidskeletonapp.ui.foreign_key_violations.ForeignKeyViolationsActivity;
+import com.example.android.androidskeletonapp.ui.login.LoginActivity;
 import com.example.android.androidskeletonapp.ui.programs.ProgramsActivity;
 import com.example.android.androidskeletonapp.ui.tracked_entity_instances.TrackedEntityInstancesActivity;
 import com.example.android.androidskeletonapp.ui.tracked_entity_instances.search.TrackedEntityInstanceSearchActivity;
@@ -48,10 +55,12 @@ import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.google.android.material.navigation.NavigationView;
 import com.google.android.material.snackbar.Snackbar;
 
+import org.hisp.dhis.android.core.D2Manager;
 import org.hisp.dhis.android.core.arch.call.D2Progress;
 import org.hisp.dhis.android.core.user.User;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 
 import io.reactivex.Observable;
 import io.reactivex.android.schedulers.AndroidSchedulers;
@@ -68,6 +77,10 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
     private FloatingActionButton syncDataButton;
     private FloatingActionButton uploadDataButton;
 
+    private Button connectToNetworkBtn;
+
+    private ConstraintLayout fab_labels;
+
     private TextView syncStatusText;
     private ProgressBar progressBar;
 
@@ -81,12 +94,14 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
     private ArrayList<BluetoothDevice> mLeDevices;
     private boolean mScanning;
     private Handler mHandler;
+    private boolean loggedIn;
 
     private static final int REQUEST_ENABLE_BT = 1;
     private static final int ACCESS_FINE_LOCATION_PERMISSION = 85;
     // Stops scanning after 6 seconds.
     private static final long SCAN_PERIOD = 6000;
 
+    private Boolean connectedToNetwork = false;
 
     public static Intent getMainActivityIntent(Context context) {
         return new Intent(context, MainActivity.class);
@@ -100,11 +115,6 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
 
         compositeDisposable = new CompositeDisposable();
 
-        User user = getUser();
-        TextView greeting = findViewById(R.id.greeting);
-        greeting.setText(String.format("Hi %s!", user.displayName()));
-
-
         // Use this check to determine whether BLE is supported on the device.  Then you can
         // selectively disable BLE-related features.
         if (!getPackageManager().hasSystemFeature(PackageManager.FEATURE_BLUETOOTH_LE)) {
@@ -114,9 +124,6 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
 
         if (ContextCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
             ActivityCompat.requestPermissions(this, new String[]{Manifest.permission.ACCESS_FINE_LOCATION}, ACCESS_FINE_LOCATION_PERMISSION);
-        }
-        if(!haveNetworkConnection()){
-            disableAllButtons();
         }
 
         // Initializes a Bluetooth adapter.  For API level 18 and above, get a reference to
@@ -137,15 +144,32 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         // set up the RecyclerView
         recyclerView = findViewById(R.id.rvDevices);
 
-        inflateMainListView();
+        //inflateMainListView();
         inflateMainView();
 
-        createNavigationView(user);
+        checkNetworkConnection();
+        if(connectedToNetwork){
+            User user = getUser();
+            TextView greeting = findViewById(R.id.greeting);
+            greeting.setText(String.format("Hi %s!", user.displayName()));
+            loggedIn = true;
+        }else{
+            TextView greeting = findViewById(R.id.greeting);
+            greeting.setText("Cold Chain Monitoring");
+            loggedIn = false;
+        }
+
+        if(connectedToNetwork){
+            User user = getUser();
+            createNavigationView(user);
+        }
+
     }
 
     @Override
     protected void onResume() {
         super.onResume();
+        checkNetworkConnection();
         // Ensures Bluetooth is enabled on the device.  If Bluetooth is not currently enabled,
         // fire an intent to display a dialog asking the user to grant permission to enable it.
         if (!mBluetoothAdapter.isEnabled()) {
@@ -155,7 +179,9 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
 
         // Initializes list view adapter.
         scanLeDevice(true);
-        updateSyncDataAndButtons();
+        if(connectedToNetwork){
+            updateSyncDataAndButtons();
+        }
     }
 
     @Override
@@ -271,6 +297,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         }
     }
 
+    /*
     private void inflateMainListView(){
        syncMetadataButton = findViewById(R.id.syncMetadataButton);
        syncDataButton = findViewById(R.id.syncDataButton);
@@ -303,6 +330,8 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         });
 
     }
+
+     */
 
 
     private void inflateMainView() {
@@ -337,21 +366,37 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
             uploadData();
         });
     }
-    private boolean haveNetworkConnection() {
-        boolean haveConnectedWifi = false;
-        boolean haveConnectedMobile = false;
+    @SuppressLint("RestrictedApi")
+    private void checkNetworkConnection() {
+        ConnectivityManager connectivityManager = (ConnectivityManager) getSystemService(Context.CONNECTIVITY_SERVICE);
+        NetworkInfo networkInfo = connectivityManager.getActiveNetworkInfo();
+        connectToNetworkBtn = findViewById(R.id.connect_button);
+        fab_labels = findViewById(R.id.fab_labels);
 
-        ConnectivityManager cm = (ConnectivityManager) getSystemService(Context.CONNECTIVITY_SERVICE);
-        NetworkInfo[] netInfo = cm.getAllNetworkInfo();
-        for (NetworkInfo ni : netInfo) {
-            if (ni.getTypeName().equalsIgnoreCase("WIFI"))
-                if (ni.isConnected())
-                    haveConnectedWifi = true;
-            if (ni.getTypeName().equalsIgnoreCase("MOBILE"))
-                if (ni.isConnected())
-                    haveConnectedMobile = true;
+        if(networkInfo == null){
+            connectedToNetwork = false;
+            syncMetadataButton.setVisibility(View.INVISIBLE);
+            syncDataButton.setVisibility(View.INVISIBLE);
+            uploadDataButton.setVisibility(View.INVISIBLE);
+
+            fab_labels.setVisibility(View.INVISIBLE);
+            connectToNetworkBtn.setVisibility(View.VISIBLE);
+            connectToNetworkBtn.setOnClickListener(view -> {
+                if(loggedIn){
+                    Toast.makeText(this, "Connect to WIFI or Mobile data", Toast.LENGTH_SHORT).show();
+                }else{
+                    ActivityStarter.startActivity(this, LoginActivity.getLoginActivityIntent(this),true);
+                }
+            });
         }
-        return haveConnectedWifi || haveConnectedMobile;
+        else if(networkInfo.isConnected()){
+            connectedToNetwork = true;
+            fab_labels.setVisibility(View.VISIBLE);
+            syncMetadataButton.setVisibility(View.VISIBLE);
+            syncDataButton.setVisibility(View.VISIBLE);
+            uploadDataButton.setVisibility(View.VISIBLE);
+            connectToNetworkBtn.setVisibility(View.INVISIBLE);
+        }
     }
 
 
@@ -527,7 +572,6 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         invalidateOptionsMenu();
     }
 
-
     // Device scan callback.
     private BluetoothAdapter.LeScanCallback mLeScanCallback =
             new BluetoothAdapter.LeScanCallback() {
@@ -538,9 +582,9 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
                         @Override
                         public void run() {
                             if (!mLeDevices.contains(device)) {
-                                // Filters out other devices than the purple sensor i got
+                                // Filters out other devices
                                 // TO-DO make it generic for BM devices
-                                if (device.getAddress().startsWith("CC:98:A3") || device.getAddress().startsWith("C2:1C:80") ) {
+                                if (device.getAddress().startsWith("CC:98:A3") || device.getAddress().startsWith("C2:1C:80") || device.getAddress().startsWith("E3:8C:93:AA") || device.getAddress().startsWith("D6:70:D8")){
                                     mLeDevices.add(device);
                                 }
                             }

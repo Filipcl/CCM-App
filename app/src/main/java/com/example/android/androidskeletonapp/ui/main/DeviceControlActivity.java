@@ -265,7 +265,7 @@ public class DeviceControlActivity extends AppCompatActivity {
         }
 
         graphView.getGridLabelRenderer().setNumHorizontalLabels(3); // only 4 because of the space
-        LineGraphSeries<DataPoint> series = new LineGraphSeries<>(dataPoints); // This one should be obvious right? :)
+        LineGraphSeries<DataPoint> series = new LineGraphSeries<>(dataPoints);
 
         series.setDrawDataPoints(true);
         series.setDataPointsRadius(10);
@@ -519,6 +519,18 @@ public class DeviceControlActivity extends AppCompatActivity {
         }
         return floatList ;
     }
+
+    private ArrayList<Float> getCurrentTemps(){
+        myDB = new MyDatabaseHelper(DeviceControlActivity.this);
+        ArrayList<String> stringList = myDB.returnCurrentTemp();
+        ArrayList<Float> floatList = new ArrayList<>();
+
+        for (int i = 0; i < stringList.size(); i++) {
+            //floatList.add(Float.parseFloat(stringList.get(i).substring(0,4)));
+            System.out.println(floatList.get(i));
+        }
+        return floatList ;
+    }
     /*
     private ArrayList<Date> getCaptureDateSorted() {
         myDB = new MyDatabaseHelper(DeviceControlActivity.this);
@@ -682,7 +694,9 @@ public class DeviceControlActivity extends AppCompatActivity {
 
     private ArrayList<String> getDbResult(){
         myDB = new MyDatabaseHelper(DeviceControlActivity.this);
-        return myDB.returnCurrentTemp();
+        //Prøv den nye spørringen her - kan hende at ikke alt blir lastet opp prøv da å endre format i blokking add.
+        //return myDB.returnCurrentTemp();
+        return myDB.returnAvgTemps();
     }
 
 }

@@ -116,6 +116,21 @@ public class MyDatabaseHelper extends SQLiteOpenHelper{
         return Db_data;
     };
 
+    public ArrayList<String> returnAvgTemps(){
+        String query = "SELECT * FROM " + TABLE_NAME + " WHERE " +  COLUMN_AVG_TEMP + " =avg_temperature" + " AND " + COLUMN_MAX_TEMP + "=max_temperature" + " AND " + COLUMN_MIN_TEMP + "=min_temperature";
+        SQLiteDatabase db = this.getReadableDatabase();
+        ArrayList<String> Db_data = new ArrayList<>();
+
+        if(db != null){
+            Cursor cursor = db.rawQuery(query, null);
+
+            while (cursor.moveToNext()){
+                Db_data.add(cursor.getString(2));
+            }
+        }
+        return Db_data;
+    };
+
     //returns all data from database
     public ArrayList<String> returnAllData(){
         String query = "SELECT * FROM " + TABLE_NAME;

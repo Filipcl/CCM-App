@@ -1,16 +1,25 @@
 package com.example.android.androidskeletonapp.ui.login;
 
 import android.app.Activity;
+import android.bluetooth.BluetoothAdapter;
 import android.content.Context;
 import android.content.Intent;
+import android.net.ConnectivityManager;
+import android.net.Network;
+import android.net.NetworkCapabilities;
+import android.net.NetworkInfo;
+import android.net.NetworkRequest;
+import android.os.Build;
 import android.os.Bundle;
 import android.text.Editable;
 import android.text.TextWatcher;
 import android.view.View;
 import android.view.inputmethod.EditorInfo;
 import android.widget.ProgressBar;
+import android.widget.TextView;
 import android.widget.Toast;
 
+import androidx.annotation.RequiresApi;
 import androidx.annotation.StringRes;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.lifecycle.ViewModelProviders;
@@ -25,6 +34,7 @@ import com.google.android.material.textfield.TextInputEditText;
 
 import io.reactivex.disposables.Disposable;
 
+
 public class LoginActivity extends AppCompatActivity {
 
     private LoginViewModel loginViewModel;
@@ -35,6 +45,9 @@ public class LoginActivity extends AppCompatActivity {
     private TextInputEditText passwordEditText;
     private MaterialButton loginButton;
     private ProgressBar loadingProgressBar;
+    private TextView networkConnection;
+    private Boolean wifiConnected;
+    private Boolean mobileConnected;
 
     public static Intent getLoginActivityIntent(Context context) {
         return new Intent(context,LoginActivity.class);
@@ -51,6 +64,9 @@ public class LoginActivity extends AppCompatActivity {
         passwordEditText = findViewById(R.id.passwordText);
         loginButton = findViewById(R.id.loginButton);
         loadingProgressBar = findViewById(R.id.loginProgressBar);
+        networkConnection = findViewById(R.id.network_connection);
+
+        checkNetworkConnection();
 
         loginViewModel.getLoginFormState().observe(this, loginFormState -> {
             if (loginFormState == null) {
@@ -77,11 +93,7 @@ public class LoginActivity extends AppCompatActivity {
                 showLoginFailed(loginResult.getError());
             }
             if (loginResult.getSuccess() != null) {
-                if (Sdk.d2().programModule().programs().blockingCount() > 0) {
-                    ActivityStarter.startActivity(this, ProgramsActivity.getProgramActivityIntent(this),true);
-                } else {
-                    ActivityStarter.startActivity(this, MainActivity.getMainActivityIntent(this),true);
-                }
+                ActivityStarter.startActivity(this, MainActivity.getMainActivityIntent(this),true);
             }
             setResult(Activity.RESULT_OK);
         });
@@ -116,8 +128,17 @@ public class LoginActivity extends AppCompatActivity {
             return false;
         });
 
-        loginButton.setOnClickListener(v -> login());
+        loginButton.setOnClickListener(v -> {
+            checkNetworkConnection();
+            if(wifiConnected || mobileConnected){
+                login();
+            }else{
+            Toast.makeText(this, "Connect to WIFI or Mobile data to log in", Toast.LENGTH_SHORT).show();
+            }
+        });
     }
+
+
 
     private void login() {
         loadingProgressBar.setVisibility(View.VISIBLE);
@@ -131,6 +152,26 @@ public class LoginActivity extends AppCompatActivity {
                 .doOnTerminate(() -> loginButton.setVisibility(View.VISIBLE))
                 .subscribe(u -> {}, t -> {});
     }
+
+    private void checkNetworkConnection(){
+        ConnectivityManager connectivityManager = (ConnectivityManager) getSystemService(Context.CONNECTIVITY_SERVICE);
+        NetworkInfo networkInfo = connectivityManager.getActiveNetworkInfo();
+
+        if(networkInfo != null && networkInfo.isConnected()){
+            wifiConnected = networkInfo.getType() == ConnectivityManager.TYPE_WIFI;
+            mobileConnected = networkInfo.getType() == ConnectivityManager.TYPE_MOBILE;
+            if(wifiConnected){
+                networkConnection.setText("Connected to WIFI");
+            }else if(mobileConnected){
+                networkConnection.setText("Connected to Mobile data");
+            }
+        }else{
+            networkConnection.setText("Not connected to WIFI or Mobile data");
+            wifiConnected = false;
+            mobileConnected = false;
+        }
+    }
+
 
     @Override
     protected void onDestroy() {
