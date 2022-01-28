@@ -584,7 +584,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
                             if (!mLeDevices.contains(device)) {
                                 // Filters out other devices
                                 // TO-DO make it generic for BM devices
-                                if (device.getAddress().startsWith("CC:98:A3") || device.getAddress().startsWith("C2:1C:80") || device.getAddress().startsWith("E3:8C:93:AA") || device.getAddress().startsWith("D6:70:D8")){
+                                if (device.getAddress().startsWith("CC:98:A3") || device.getAddress().startsWith("C2:1C:80") || device.getAddress().startsWith("E3:8C:93:AA") || device.getAddress().startsWith("D6:70:D8")|| device.getAddress().startsWith("F1:78:D6") || device.getAddress().startsWith("D0:5A:3A")|| device.getAddress().startsWith("F5:2C:3F")){
                                     mLeDevices.add(device);
                                 }
                             }
