@@ -8,13 +8,14 @@
 <br />
 <div align="center">
  
- [skeletonLogo]
+ [![Logo][skeletonLogo]
  
   <br />
   <h3 align="center">Cold Chain Monitoring App</h3>
 
   <p align="center">
     The Cold Chain Monitoring App is a capture tool for temperature readings in cold chain supply chains.
+    <br />
     <br />
     <a href="https://player.vimeo.com/video/649687929?h=ad4e689fd3"><strong>View Demo »</strong></a>
     <br />
