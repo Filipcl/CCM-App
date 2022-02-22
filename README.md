@@ -8,8 +8,9 @@
 <br />
 <div align="center">
  
- [![skeletonLogo]]
-
+ [skeletonLogo]
+ 
+  <br />
   <h3 align="center">Cold Chain Monitoring App</h3>
 
   <p align="center">
@@ -39,8 +40,6 @@ and download DHIS2 data and metadata. It's composed for a splash, a
 login activity and a main activity. It also provide a menu to log out
 and delete data.
 
-[DHIS2 Android Sdk repository](https://github.com/dhis2/dhis2-android-sdk)<br>
-[DHIS2 Rule Engine repository](https://github.com/dhis2/dhis2-rule-engine)
 
 ## How the app looks
 ![Skeleton app feel and look][skeletonAppScreenshots]
@@ -74,9 +73,10 @@ This app allows to:
 <!-- CONTACT -->
 ## Contact
 
-Your Name - [@your_twitter](https://twitter.com/your_username) - email@example.com
-
+Filip Christoffer Larsen -  Filip.larsen@live.no
+<br />
 Project Link: [https://github.com/Filipcl/CCM-App](https://github.com/Filipcl/CCM-App)
+<br />
 DHIS2 Skeleton App: [https://github.com/dhis2/dhis2-android-skeleton-app](https://github.com/dhis2/dhis2-android-skeleton-app)
 
 <p align="right">(<a href="#top">back to top</a>)</p>
