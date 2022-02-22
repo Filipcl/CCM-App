@@ -7,7 +7,8 @@
 <!-- PROJECT LOGO -->
 <br />
 <div align="center">
- ![DHIS2 Skeleton App logo][skeletonLogo] 
+ 
+ [![DHIS2 Skeleton App logo][skeletonLogo]]
 
   <h3 align="center">Cold Chain Monitoring App</h3>
 
