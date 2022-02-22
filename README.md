@@ -8,24 +8,22 @@
 <br />
 <div align="center">
  
- [![DHIS2 Skeleton App logo][skeletonLogo]]
+ [![skeletonLogo]]
 
   <h3 align="center">Cold Chain Monitoring App</h3>
 
   <p align="center">
     The Cold Chain Monitoring App is a capture tool for temperature readings in cold chain supply chains.
     <br />
-    <a href="https://github.com/othneildrew/Best-README-Template"><strong>Explore the docs »</strong></a>
+    <a href="https://player.vimeo.com/video/649687929?h=ad4e689fd3"><strong>View Demo »</strong></a>
     <br />
-    <br />
-    <a href="https://player.vimeo.com/video/649687929?h=ad4e689fd3">View Demo</a>
   </p>
 </div>
 
 
 
 
-### DHIS2 Cold Chain Monitoring App
+### About The Project
 ---
 The DHIS2 Cold Chain Monitoring App is a capture tool for temperature readings regarding cold chain monitoring in su.
 
@@ -65,25 +63,23 @@ use cases.
 
 This app allows to:
 
-* Login/Logout
-* Download metadata
-* Download data
-* Upload data
+* Login/Logout of DHIS2 intance
+* Download metadata from DHIS2
+* Download data from DHIS2
+* Upload data to DHIS2 tracker capture
 * Wipe data
-* Download file resources
-* Upload file resources
-* Create tracked entity instances
-* Search tracked entity instances
-* Create events without registration
-* Create data values
-* List programs
-* List data sets
-* List data set instances 
-* List foreign key violations
-* List D2Errors
-* Show granular sync states
-* Execute code snippets
+* Create events on Tracked Entity Instances
 
+
+<!-- CONTACT -->
+## Contact
+
+Your Name - [@your_twitter](https://twitter.com/your_username) - email@example.com
+
+Project Link: [https://github.com/Filipcl/CCM-App](https://github.com/Filipcl/CCM-App)
+DHIS2 Skeleton App: [https://github.com/dhis2/dhis2-android-skeleton-app](https://github.com/dhis2/dhis2-android-skeleton-app)
+
+<p align="right">(<a href="#top">back to top</a>)</p>
 
 
 
