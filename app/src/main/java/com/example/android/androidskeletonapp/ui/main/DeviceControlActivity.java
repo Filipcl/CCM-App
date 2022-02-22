@@ -1,6 +1,7 @@
 package com.example.android.androidskeletonapp.ui.main;
 
 import android.Manifest;
+import android.annotation.SuppressLint;
 import android.app.AlertDialog;
 import android.app.NotificationChannel;
 import android.app.NotificationManager;
@@ -14,6 +15,8 @@ import android.content.Intent;
 import android.content.IntentFilter;
 import android.content.ServiceConnection;
 import android.content.pm.PackageManager;
+import android.net.ConnectivityManager;
+import android.net.NetworkInfo;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
@@ -37,7 +40,9 @@ import androidx.core.app.NotificationManagerCompat;
 
 import com.example.android.androidskeletonapp.R;
 import com.example.android.androidskeletonapp.data.Sdk;
+import com.example.android.androidskeletonapp.data.service.ActivityStarter;
 import com.example.android.androidskeletonapp.ui.cold_chain.ColdChain;
+import com.example.android.androidskeletonapp.ui.login.LoginActivity;
 import com.google.android.material.snackbar.Snackbar;
 import com.jjoe64.graphview.GraphView;
 import com.jjoe64.graphview.series.DataPoint;
@@ -56,6 +61,7 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Date;
 import java.util.List;
+import java.util.UUID;
 
 import io.reactivex.annotations.NonNull;
 
@@ -83,6 +89,7 @@ public class DeviceControlActivity extends AppCompatActivity {
     boolean tellSent = false;
     boolean infoSent = false;
     boolean uploadClicked = false;
+    boolean connectedToNetwork;
 
     private String device_name;
     private String current_Temp;
@@ -199,10 +206,12 @@ public class DeviceControlActivity extends AppCompatActivity {
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
         getSupportActionBar().setDisplayShowHomeEnabled(true);
 
-        Sdk.d2().trackedEntityModule().trackedEntityInstanceDownloader()
-                .limit(10).limitByOrgunit(false).limitByProgram(false).download();
-        Sdk.d2().eventModule().eventDownloader()
-                .limit(10).limitByOrgunit(false).limitByProgram(false).download();
+        if(connectedToNetwork){
+            Sdk.d2().trackedEntityModule().trackedEntityInstanceDownloader()
+                    .limit(10).limitByOrgunit(false).limitByProgram(false).download();
+            Sdk.d2().eventModule().eventDownloader()
+                    .limit(10).limitByOrgunit(false).limitByProgram(false).download();
+        }
 
         final Intent intent = getIntent();
         mDeviceName = intent.getStringExtra(EXTRAS_DEVICE_NAME);
@@ -278,13 +287,27 @@ public class DeviceControlActivity extends AppCompatActivity {
             public void onClick(View v) {
                 uploadClicked = true;
                 MyDatabaseHelper myDB = new MyDatabaseHelper(DeviceControlActivity.this);
-                myDB.addTemperatures(device_name, current_Temp, max_Temp, min_Temp, average_last_24h);
-                addEvent("g5oklCs7xIg","SDuMzcGLh8i","aecqgkE5quA", "iMDPax84iAN");
-                Snackbar.make(v, "Adding temperature to database", Snackbar.LENGTH_LONG)
-                        .setAction("Action", null).show();
+                if(connectedToNetwork){
+                    myDB.addTemperatures(device_name, current_Temp, max_Temp, min_Temp, average_last_24h);
+                    addEvent("g5oklCs7xIg","SDuMzcGLh8i","aecqgkE5quA", "iMDPax84iAN");
+                    Snackbar.make(v, "Adding temperature to database", Snackbar.LENGTH_LONG)
+                            .setAction("Action", null).show();
+                }else{
+                    myDB.addTemperatures(device_name, current_Temp, max_Temp, min_Temp, average_last_24h);
+                    myDB.addOfflineTemperatures(device_name, current_Temp, max_Temp, min_Temp, average_last_24h);
+                    Snackbar.make(v, "Adding temperature to database", Snackbar.LENGTH_LONG)
+                            .setAction("Action", null).show();
+                }
+                System.out.println("-------------");
+                ArrayList<String> offList = myDB.returnAllOfflineData();
+                    for (int i = 0; i < offList.size(); i++) {
+                        System.out.println(offList.get(i));
+                    }
+                System.out.println("-------------");
 
             }
         });
+
        downloadBtn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -461,6 +484,40 @@ public class DeviceControlActivity extends AppCompatActivity {
         });
     }
 
+
+    //If connected it adds the data to DB - else it makes an event right away
+    private void checkNetworkConnection() {
+        ConnectivityManager connectivityManager = (ConnectivityManager) getSystemService(Context.CONNECTIVITY_SERVICE);
+        NetworkInfo networkInfo = connectivityManager.getActiveNetworkInfo();
+
+        if(networkInfo == null){
+            connectedToNetwork = false;
+            uploadBtn.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    MyDatabaseHelper myDB = new MyDatabaseHelper(DeviceControlActivity.this);
+                    myDB.addOfflineTemperatures(device_name, current_Temp, max_Temp, min_Temp, average_last_24h);
+                    Snackbar.make(v, "Temperature added to local database", Snackbar.LENGTH_LONG)
+                            .setAction("Action", null).show();
+                    }
+            });
+        }
+        else if(networkInfo.isConnected()){
+            connectedToNetwork = true;
+            uploadBtn.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    MyDatabaseHelper myDB = new MyDatabaseHelper(DeviceControlActivity.this);
+                    myDB.addTemperatures(device_name, current_Temp, max_Temp, min_Temp, average_last_24h);
+                    addEvent("g5oklCs7xIg","SDuMzcGLh8i","aecqgkE5quA", "iMDPax84iAN");
+                    Snackbar.make(v, "Adding temperature DHIS2", Snackbar.LENGTH_LONG)
+                            .setAction("Action", null).show();
+                    }
+            });
+        }
+    }
+
+
     private void downloadNotifiction(){
         Intent intent = new Intent(Intent.ACTION_OPEN_DOCUMENT);
         Uri uri = Uri.parse(String.valueOf(Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOWNLOADS)));
@@ -531,27 +588,7 @@ public class DeviceControlActivity extends AppCompatActivity {
         }
         return floatList ;
     }
-    /*
-    private ArrayList<Date> getCaptureDateSorted() {
-        myDB = new MyDatabaseHelper(DeviceControlActivity.this);
-        ArrayList<String> dates =  myDB.returnCaptureDate();
-        ArrayList<Date> formattedDates =  new ArrayList<>();
 
-        for (int i = 0; i < dates.size() ; i++) {
-            SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd");
-            String dateString = format.format(dates.get(i));
-            try {
-                formattedDates.add(format.parse(dateString));
-                System.out.println(formattedDates.get(i));
-
-            } catch (ParseException e) {
-                e.printStackTrace();
-            }
-        }
-        return formattedDates;
-    }
-
-     */
     private void updateTempColor(String temp , TextView tv){
         String s;
         if(temp.contains("-")){
@@ -694,7 +731,6 @@ public class DeviceControlActivity extends AppCompatActivity {
 
     private ArrayList<String> getDbResult(){
         myDB = new MyDatabaseHelper(DeviceControlActivity.this);
-        //Prøv den nye spørringen her - kan hende at ikke alt blir lastet opp prøv da å endre format i blokking add.
         //return myDB.returnCurrentTemp();
         return myDB.returnAvgTemps();
     }

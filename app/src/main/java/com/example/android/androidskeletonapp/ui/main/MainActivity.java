@@ -57,10 +57,18 @@ import com.google.android.material.snackbar.Snackbar;
 
 import org.hisp.dhis.android.core.D2Manager;
 import org.hisp.dhis.android.core.arch.call.D2Progress;
+import org.hisp.dhis.android.core.event.EventCreateProjection;
+import org.hisp.dhis.android.core.event.EventStatus;
+import org.hisp.dhis.android.core.maintenance.D2Error;
+import org.hisp.dhis.android.core.program.ProgramStageDataElement;
 import org.hisp.dhis.android.core.user.User;
 
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Date;
+import java.util.List;
 
 import io.reactivex.Observable;
 import io.reactivex.android.schedulers.AndroidSchedulers;
@@ -72,7 +80,7 @@ import static com.example.android.androidskeletonapp.data.service.LogOutService.
 public class MainActivity extends AppCompatActivity implements NavigationView.OnNavigationItemSelectedListener {
 
     private CompositeDisposable compositeDisposable;
-
+    MyDatabaseHelper myDB;
     private FloatingActionButton syncMetadataButton;
     private FloatingActionButton syncDataButton;
     private FloatingActionButton uploadDataButton;
@@ -143,6 +151,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
 
         // set up the RecyclerView
         recyclerView = findViewById(R.id.rvDevices);
+        myDB = new MyDatabaseHelper(MainActivity.this);
 
         //inflateMainListView();
         inflateMainView();
@@ -297,43 +306,6 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         }
     }
 
-    /*
-    private void inflateMainListView(){
-       syncMetadataButton = findViewById(R.id.syncMetadataButton);
-       syncDataButton = findViewById(R.id.syncDataButton);
-        uploadDataButton = findViewById(R.id.uploadDataButton);
-
-        progressBar = findViewById(R.id.syncProgressBar);
-
-        syncMetadataButton.setOnClickListener(view -> {
-            setSyncing();
-            Snackbar.make(view, "Syncing metadata", Snackbar.LENGTH_LONG)
-                    .setAction("Action", null).show();
-            syncStatusText.setText(R.string.syncing_metadata);
-            syncMetadata();
-        });
-
-        syncDataButton.setOnClickListener(view -> {
-            setSyncing();
-            Snackbar.make(view, "Syncing data", Snackbar.LENGTH_LONG)
-                    .setAction("Action", null).show();
-            syncStatusText.setText(R.string.syncing_data);
-            downloadData();
-        });
-
-        uploadDataButton.setOnClickListener(view -> {
-            setSyncing();
-            Snackbar.make(view, "Uploading data", Snackbar.LENGTH_LONG)
-                    .setAction("Action", null).show();
-            syncStatusText.setText(R.string.uploading_data);
-            uploadData();
-        });
-
-    }
-
-     */
-
-
     private void inflateMainView() {
        syncMetadataButton = findViewById(R.id.syncMetadataButton);
        syncDataButton = findViewById(R.id.syncDataButton);
@@ -396,9 +368,66 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
             syncDataButton.setVisibility(View.VISIBLE);
             uploadDataButton.setVisibility(View.VISIBLE);
             connectToNetworkBtn.setVisibility(View.INVISIBLE);
+            ArrayList<String> offList = myDB.returnAllOfflineData();
+            if(!offList.isEmpty()){
+                //Makes events from the offline DB
+                addEventsFromOfflineDB("g5oklCs7xIg","SDuMzcGLh8i","aecqgkE5quA", "iMDPax84iAN");
+                //After events are made sanitizes the offline db
+                myDB.deleteAllOfflineData();
+            }
         }
     }
 
+    private void addEventsFromOfflineDB(String enrollmentID, String programUid , String programStageId, String ouUid){
+            String defaultOptionCombo = Sdk.d2().categoryModule().categoryOptionCombos()
+                    .byDisplayName().eq("default").one().blockingGet().uid();
+            try {
+                ArrayList<String> dbResult = getDbResult();
+
+                //makes a new event and returns it eventUID
+                String eventUid = Sdk.d2().eventModule().events().blockingAdd(
+                        EventCreateProjection.builder()
+                                .enrollment(enrollmentID)
+                                .program(programUid)
+                                .programStage(programStageId)
+                                .organisationUnit(ouUid)
+                                .attributeOptionCombo(defaultOptionCombo)
+                                .build()
+                );
+
+                //sets the created-, enrollment- and event-date to this date.
+                System.out.println("Ny Event UID :::::  " + eventUid);
+
+                //Super important to have correct date format or it wont upload!!
+
+                SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd");
+                String dateString = format.format(new Date());
+                Date date = format.parse (dateString);
+
+                Sdk.d2().eventModule().events().uid(eventUid).setEventDate(date);
+                Sdk.d2().enrollmentModule().enrollments().uid("g5oklCs7xIg").setEnrollmentDate(date);
+                Sdk.d2().eventModule().events().uid(eventUid).setCompletedDate(date);
+
+
+                //Get's the event's dataElement UID and set's a value to the event
+                List<ProgramStageDataElement> programDataElem = Sdk.d2().programModule().programStageDataElements().blockingGet();
+                for (ProgramStageDataElement elem: programDataElem
+                ) {
+                    for (int i = 0; i < dbResult.size() ; i++) {
+                        Sdk.d2().trackedEntityModule().trackedEntityDataValues().value(eventUid, elem.dataElement().uid()).blockingSet(dbResult.get(i).substring(0,4));
+                        System.out.println(Sdk.d2().trackedEntityModule().trackedEntityDataValues().value(eventUid, elem.dataElement().uid()).blockingGet());
+                    }
+                }
+
+                //set eventStatus and upload
+                Sdk.d2().eventModule().events().uid(eventUid).setStatus(EventStatus.COMPLETED);
+                Sdk.d2().eventModule().events().upload();
+
+            } catch (D2Error | ParseException d2Error) {
+                d2Error.printStackTrace();
+            }
+
+    }
 
     private void setSyncing() {
         isSyncing = true;
@@ -511,6 +540,11 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
     }
 
     private void uploadData() {
+        if(Sdk.d2().eventModule() == null){
+          System.out.println("There are no Events to upload");
+          //for (each item in db - make event and upload)
+        }
+        else{
         compositeDisposable.add(
                 Sdk.d2().fileResourceModule().fileResources().upload()
                         .concatWith(Sdk.d2().trackedEntityModule().trackedEntityInstances().upload())
@@ -521,6 +555,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
                         .doOnComplete(this::setSyncingFinished)
                         .doOnError(Throwable::printStackTrace)
                         .subscribe());
+        }
     }
 
     private void wipeData() {
@@ -531,6 +566,10 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
                         .doOnError(Throwable::printStackTrace)
                         .doOnComplete(this::setSyncingFinished)
                         .subscribe());
+    }
+
+    private ArrayList<String> getDbResult(){
+        return myDB.returnAvgTemps_offline();
     }
 
     @Override
