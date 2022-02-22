@@ -1,12 +1,37 @@
-### DHIS2 Android Skeleton App
+<div id="top"></div>
+[![Contributors][contributors-shield]][contributors-url]
+[![Forks][forks-shield]][https://github.com/Filipcl/CCM-App/network/members]
+[![Stargazers][stars-shield]][https://github.com/Filipcl/CCM-App/stargazers]
+[![LinkedIn][linkedin-shield]][https://www.linkedin.com/in/filipcl/]
+
+<!-- PROJECT LOGO -->
+<br />
+<div align="center">
+ ![DHIS2 Skeleton App logo][skeletonLogo] 
+
+  <h3 align="center">Cold Chain Monitoring App</h3>
+
+  <p align="center">
+    An awesome README template to jumpstart your projects!
+    <br />
+    <a href="https://github.com/othneildrew/Best-README-Template"><strong>Explore the docs »</strong></a>
+    <br />
+    <br />
+    <a href="https://player.vimeo.com/video/649687929?h=ad4e689fd3">View Demo</a>
+    ·
+    <a href="https://github.com/othneildrew/Best-README-Template/issues">Request Feature</a>
+  </p>
+</div>
+
+
+
+
+### DHIS2 Cold Chain Monitoring App
 ---
-The DHIS2 Android Skeleton App exist to provide a smooth first contact
-with the DHIS2 Android Sdk to the developers.
+The DHIS2 Cold Chain Monitoring App is a capture tool for temperature readings regarding cold chain monitoring in su.
 
 # The DHIS2 Android Skeleton App 
 ## A Starting point
-
-![DHIS2 Skeleton App logo][skeletonLogo] 
 
 The *Skeleton App* serves as an entry point for developers who want to
 build their own DHIS2 android app. 
