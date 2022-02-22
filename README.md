@@ -1,8 +1,7 @@
 <div id="top"></div>
-[![Contributors][contributors-shield]][contributors-url]
-[![Forks][forks-shield]][https://github.com/Filipcl/CCM-App/network/members]
-[![Stargazers][stars-shield]][https://github.com/Filipcl/CCM-App/stargazers]
-[![LinkedIn][linkedin-shield]][https://www.linkedin.com/in/filipcl/]
+[![Forks][forks-shield]][forks-url]
+[![Stargazers][stars-shield]][stars-url]
+[![LinkedIn][linkedin-shield]][linkedin-url]
 
 <!-- PROJECT LOGO -->
 <br />
@@ -88,3 +87,15 @@ This app allows to:
 [skeletonLogo]: https://github.com/dhis2/dhis2-android-skeleton-app/blob/master/assets/logo-launcher.png?raw=true "Skeleton logo screenshot"
 [skeletonAppScreenshots]: https://github.com/dhis2/dhis2-android-skeleton-app/blob/master/assets/skeleton-app-screenshots.jpg?raw=true "Skeleton app screenshots"
 [useCasesScreenshots]: https://github.com/dhis2/dhis2-android-skeleton-app/blob/master/assets/use-cases-skeleton-app-screenshots.jpg?raw=true "Use cases skeleton app screenshots"
+
+
+
+<!-- MARKDOWN LINKS & IMAGES -->
+<!-- https://www.markdownguide.org/basic-syntax/#reference-style-links -->
+[forks-shield]: https://img.shields.io/github/forks/othneildrew/Best-README-Template.svg?style=for-the-badge
+[forks-url]: https://github.com/Filipcl/CCM-App/network/members
+[stars-shield]: https://img.shields.io/github/stars/othneildrew/Best-README-Template.svg?style=for-the-badge
+[stars-url]: https://github.com/Filipcl/CCM-App/stargazers
+[linkedin-shield]: https://img.shields.io/badge/-LinkedIn-black.svg?style=for-the-badge&logo=linkedin&colorB=555
+[linkedin-url]: https://www.linkedin.com/in/filipcl/
+
