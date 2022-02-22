@@ -1,4 +1,5 @@
 <div id="top"></div>
+
 [![Forks][forks-shield]][forks-url]
 [![Stargazers][stars-shield]][stars-url]
 [![LinkedIn][linkedin-shield]][linkedin-url]
@@ -11,14 +12,12 @@
   <h3 align="center">Cold Chain Monitoring App</h3>
 
   <p align="center">
-    An awesome README template to jumpstart your projects!
+    The Cold Chain Monitoring App is a capture tool for temperature readings in cold chain supply chains.
     <br />
     <a href="https://github.com/othneildrew/Best-README-Template"><strong>Explore the docs »</strong></a>
     <br />
     <br />
     <a href="https://player.vimeo.com/video/649687929?h=ad4e689fd3">View Demo</a>
-    ·
-    <a href="https://github.com/othneildrew/Best-README-Template/issues">Request Feature</a>
   </p>
 </div>
 
@@ -84,9 +83,6 @@ This app allows to:
 * Show granular sync states
 * Execute code snippets
 
-[skeletonLogo]: https://github.com/dhis2/dhis2-android-skeleton-app/blob/master/assets/logo-launcher.png?raw=true "Skeleton logo screenshot"
-[skeletonAppScreenshots]: https://github.com/dhis2/dhis2-android-skeleton-app/blob/master/assets/skeleton-app-screenshots.jpg?raw=true "Skeleton app screenshots"
-[useCasesScreenshots]: https://github.com/dhis2/dhis2-android-skeleton-app/blob/master/assets/use-cases-skeleton-app-screenshots.jpg?raw=true "Use cases skeleton app screenshots"
 
 
 
@@ -98,4 +94,8 @@ This app allows to:
 [stars-url]: https://github.com/Filipcl/CCM-App/stargazers
 [linkedin-shield]: https://img.shields.io/badge/-LinkedIn-black.svg?style=for-the-badge&logo=linkedin&colorB=555
 [linkedin-url]: https://www.linkedin.com/in/filipcl/
+[skeletonLogo]: https://github.com/dhis2/dhis2-android-skeleton-app/blob/master/assets/logo-launcher.png?raw=true "Skeleton logo screenshot"
+[skeletonAppScreenshots]: https://github.com/dhis2/dhis2-android-skeleton-app/blob/master/assets/skeleton-app-screenshots.jpg?raw=true "Skeleton app screenshots"
+[useCasesScreenshots]: https://github.com/dhis2/dhis2-android-skeleton-app/blob/master/assets/use-cases-skeleton-app-screenshots.jpg?raw=true "Use cases skeleton app screenshots"
+
 
