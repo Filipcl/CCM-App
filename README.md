@@ -8,7 +8,7 @@
 <br />
 <div align="center">
  
- [![Logo][skeletonLogo]
+ ![Logo][skeletonLogo]
  
   <br />
   <h3 align="center">Cold Chain Monitoring App</h3>
