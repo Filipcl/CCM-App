@@ -48,9 +48,7 @@ Application Architecture
 ## How the app looks
 
 
-![MainView](https://user-images.githubusercontent.com/32879828/168016493-58468ca6-4a1a-41d8-bae9-35bfd5fdd06a.jpg)
-
-![afterCon](https://user-images.githubusercontent.com/32879828/168016540-36265e2c-47ae-4774-8411-5a9d4bfc7234.jpg)
+![MainView](https://user-images.githubusercontent.com/32879828/168016493-58468ca6-4a1a-41d8-bae9-35bfd5fdd06a.jpg)  | ![afterCon](https://user-images.githubusercontent.com/32879828/168016540-36265e2c-47ae-4774-8411-5a9d4bfc7234.jpg)
 
 
 This app allows to: 
