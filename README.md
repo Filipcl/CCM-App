@@ -27,53 +27,58 @@
 
 ### About The Project
 ---
-The DHIS2 Cold Chain Monitoring App is a capture tool for temperature readings regarding cold chain monitoring in su.
+The Cold Chain Monitoring App is a capture tool for temperature readings, designed to capture temperatures from a Bluetooth Low Energy (BLE) device and uploaded it to the DHIS2 tracker capter tool.
+ 
+# Introduction
+The DHIS2 *Skeleton App* served as a starting point for making the integration with tracker capture using **DHIS2 Android Sdk**. In addition is the UART-Protocol is used for communicating with Bluetooth Low Eenergy (BLE) devices to capture temperature data. 
 
-# The DHIS2 Android Skeleton App 
-## A Starting point
 
-The *Skeleton App* serves as an entry point for developers who want to
-build their own DHIS2 android app. 
+## Architecture
+Images below represent the system arcitechture - how the data flows from the android application to the DHIS2 servers.
+![dataFlow](https://user-images.githubusercontent.com/32879828/168015868-2fdeab7f-8439-4c34-93c9-867013234aea.jpg)
+System Architecture
 
-This application includes the **DHIS2 Android Sdk** and the **DHIS2 Rule
-Engine** dependencies and allows developers to log in to DHIS2 servers
-and download DHIS2 data and metadata. It's composed for a splash, a
-login activity and a main activity. It also provide a menu to log out
-and delete data.
+
+Images below represent the application arcitechture - which DHIS2 modules are invloved in the integration and witch modules developed for the BLE communication.
+![AppArch4](https://user-images.githubusercontent.com/32879828/168015524-d7f2c725-6d76-4848-bec3-0ab1ae2babb5.jpg)
+Application Architecture
+
 
 
 ## How the app looks
-![Skeleton app feel and look][skeletonAppScreenshots]
+
+
+![MainView](https://user-images.githubusercontent.com/32879828/168016493-58468ca6-4a1a-41d8-bae9-35bfd5fdd06a.jpg)
+
+![afterCon](https://user-images.githubusercontent.com/32879828/168016540-36265e2c-47ae-4774-8411-5a9d4bfc7234.jpg)
+
 
 This app allows to: 
 
-* Login/Logout
-* Download metadata
-* Download data
-* Wipe data
+* Login/Logout of DHIS2
+* Download metadata from DHIS2
+* Download data from DHI2
+* Upload data to DHI2
+* Wipe data from android device
+* Export data from local database to .CSV-file
+* Set notification localy on the android device
+* Capture temperature readings from BLE device like: current temp, min 24h temp, max 24h temp and average 24h temp.
+
+
 
 # Use cases
+This application can provide better CCM in all the stages in a supply chain; at health facilities, during transport of CCE and vaccination at rural locations. 
+ 
 
-In this repository it is also possible to find a branch named
-`use-cases`. This branch contains an application with DHIS2 Android Sdk
-use cases.
+# Demo of Appliation
+Demo: [https://www.youtube.com/watch?v=GtM8DGe6iUE](https://www.youtube.com/watch?v=GtM8DGe6iUE)
 
-## How the use cases app looks
-![Use cases feel and look][useCasesScreenshots]
-
-This app allows to:
-
-* Login/Logout of DHIS2 intance
-* Download metadata from DHIS2
-* Download data from DHIS2
-* Upload data to DHIS2 tracker capture
-* Wipe data
-* Create events on Tracked Entity Instances
-
-
+# Application Pilot
+If you want to read more about the use-case of this application, here is link describing the application being piloted in a real-life context.
+Piloting artical: [https://community.dhis2.org/t/developing-and-piloting-a-dhis2-android-app-for-cold-chain-monitoring/47087](https://community.dhis2.org/t/developing-and-piloting-a-dhis2-android-app-for-cold-chain-monitoring/47087)
+ 
 <!-- CONTACT -->
 ## Contact
-
 Filip Christoffer Larsen -  Filip.larsen@live.no
 <br />
 Project Link: [https://github.com/Filipcl/CCM-App](https://github.com/Filipcl/CCM-App)
